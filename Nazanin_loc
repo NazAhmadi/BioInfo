@@ -1,0 +1,97 @@
+using HTTP
+using DataFrames
+using CSV
+
+function ncbi_mesh_search(pubmed_query, ncbi_key)
+
+    retmax = 30000
+    retstart = 0
+
+    query_dict = Dict()
+    location_dict = Dict()
+
+    while (retstart < retmax)
+        base_search_query = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+        println("hello. I will search PubMed for $pubmed_query")
+
+        query_dict["api_key"] = ncbi_key
+        query_dict["db"] = "pubmed"
+        query_dict["term"] = pubmed_query
+        query_dict["retmax"] = retmax
+        query_dict["retstart"] = retstart
+
+        search_result = String(HTTP.post(base_search_query, body=HTTP.escapeuri(query_dict)))
+        pmid_set = Set()
+
+        for result_line in split(search_result, "\n")
+            pmid_capture = match(r"<Id>(\d+)<\/Id>", result_line)
+            if pmid_capture != nothing
+                push!(pmid_set, pmid_capture[1])
+            end
+        end
+
+        id_string = join(collect(pmid_set), ",")
+        base_fetch_query = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+        query_dict["db"] = "pubmed"
+        query_dict["api_key"] = ncbi_key
+        query_dict["id"] = id_string
+        query_dict["rettype"] = "medline"
+        query_dict["retmode"] = "text"
+        query_dict["retstart"] = 0
+
+        success = false
+        fetch_result = ""
+        while (!success)
+            try
+                sleep(2)
+                fetch_result = String(HTTP.post(base_fetch_query, body=HTTP.escapeuri(query_dict)))
+                success = true
+            catch e
+                println("Encountered $e. Re-attempting E-Fetch query.")
+            end
+        end
+
+        for fetch_line in split(fetch_result, "\n")
+            location_capture = match(r"AD\s+-\s+(.*)", fetch_line)
+            if location_capture != nothing
+                location = location_capture[1]
+                if haskey(location_dict, location)
+                    location_dict[location] += 1
+                else
+                    location_dict[location] = 1
+                end
+            end
+        end
+
+        retstart += 10000
+        sleep(2)
+    end
+
+    df = DataFrame(Location=collect(keys(location_dict)), Count=collect(values(location_dict)))
+    println(df)
+
+    df_sorted = sort(df, :Count, rev=true)
+
+    if nrow(df_sorted) > 0
+        top_n = min(10, nrow(df_sorted))
+        println(df_sorted[1:top_n, :])
+    else
+        println("No data found.")
+    end
+end
+
+# CSV.write(output_file, df)
+
+
+# load file that contains API keys
+include("./api_keys.jl")
+
+function main()
+    println("Hello! I hope you are having a nice day!!")
+
+    ncbi_key = api_key["ncbi"]
+    pubmed_query = """ "Heart Failure"[Mesh] AND "Diabetes Mellitus, Type 2"[Mesh]"""
+    ncbi_mesh_search(pubmed_query, ncbi_key)
+end
+
+main()

@@ -1,0 +1,33 @@
+Type 1 Diabetes Descriptive Statistics:
+Mean: 14.285714285714286
+Median: 4.942965779467681
+Standard Deviation: 13.305915361201263
+Minimum: 1.520912547528517
+Maximum: 30.038022813688215
+
+Type 2 Diabetes Descriptive Statistics:
+Mean: 14.285714285714283
+Median: 1.622352410995944
+Standard Deviation: 19.576384376129866
+Minimum: 0.31545741324921134
+Maximum: 48.0396575033799
+
+T-test result:
+Two sample t-test (equal variance)
+----------------------------------
+Population details:
+    parameter of interest:   Mean difference
+    value under h_0:         0
+    point estimate:          3.55271e-15
+    95% confidence interval: (-19.49, 19.49)
+
+Test summary:
+    outcome with 95% confidence: fail to reject h_0
+    two-sided p-value:           1.0000
+
+Details:
+    number of observations:   [7,7]
+    t-statistic:              3.971054176047911e-16
+    degrees of freedom:       12
+    empirical standard error: 8.946525333825205
+

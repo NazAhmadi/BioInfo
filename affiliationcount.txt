@@ -1,0 +1,48 @@
+affiliation|count
+  - TIMI Study Group, Cardiovascular Division, Brigham an|52
+  - Department of Medical and Surgical Sciences, Universi|45
+  - Julius Center for Health Sciences and Primary Care, U|32
+  - Duke Clinical Research Institute, Durham, North Carol|34
+  - Department of Cardiovascular, Renal and Metabolic Med|54
+  - Division of Cardiology, Department of Internal Medici|232
+  - Department of Cardiology, The First Affiliated Hospit|34
+  - Saint Luke's Mid America Heart Institute, Kansas City|39
+  - Department of Medicine, University of Mississippi Med|33
+  - From the Cardiovascular Division, Brigham and Women's|42
+  - Baylor Heart and Vascular Institute, Baylor Universit|38
+  - Department of Internal Medicine I, University Hospita|32
+  - Department of Clinical Medicine, University of Copenh|45
+  - BHF Cardiovascular Research Centre, University of Gla|71
+  - Department of Advanced Medical and Surgical Sciences,|42
+  - Leeds Institute of Cardiovascular and Metabolic Medic|41
+  - Division of Cardiology, Department of Medicine, The U|40
+  - Department of Clinical Pharmacy and Pharmacology, Uni|45
+  - Service de Cardiologie, Centre Hospitalier Universita|34
+  - Department of Cardiology, Herlev and Gentofte Hospita|43
+  - Department of Cardiology, University Medical Center G|49
+  - Duke Clinical Research Institute, Duke University Sch|53
+  - Department of Internal Medicine, Seoul National Unive|40
+  - From Baylor Heart and Vascular Institute, Baylor Univ|40
+  - Department of Cardiology, Aarhus University Hospital,|41
+  - Department of Clinical Epidemiology, Aarhus Universit|31
+  - Department of Cardiology, Herlev and Gentofte Univers|52
+  - Division of Cardiology, Department of Medicine, Taipe|48
+  - The George Institute for Global Health, UNSW Sydney, |34
+  - The George Institute for Global Health, University of|32
+  - Boehringer Ingelheim International GmbH, Ingelheim, G|49
+  - Cardiovascular Division, Brigham and Women's Hospital|107
+  - Division of Cardiovascular Medicine, Brigham and Wome|42
+  - Division of Endocrinology and Metabolism, Department |77
+  - Department of Cardiovascular Medicine, Saga Universit|38
+  - TIMI Study Group, Division of Cardiovascular Medicine|33
+  - From the BHF Cardiovascular Research Centre, Universi|38
+  - Division of Nephrology, Department of Internal Medici|34
+  - British Heart Foundation Cardiovascular Research Cent|55
+  - Division of Cardiology, Department of Medicine, Unive|38
+  - Division of Pharmacoepidemiology and Pharmacoeconomic|51
+  - Institute of Cardiovascular and Medical Sciences, Uni|44
+- Department of Medicine and Therapeutics, The Chinese Un|34
+  - Diabetes Unit, Department of Endocrinology and Metabo|36
+  - Division of Cardiovascular Medicine, Department of In|56
+  - From the Thrombolysis in Myocardial Infarction (TIMI)|38
+  - Department of Cardiovascular Medicine, Faculty of Med|36

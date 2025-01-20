@@ -1,0 +1,147 @@
+# load HTTP package
+using HTTP
+using CSV
+using DataFrames
+using PlotlyJS
+
+# function to perform pubmed search
+function ncbi_mesh_search(pubmed_query, ncbi_key, output_file)
+    # define base URL
+    base_search_query = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi"
+
+    # tell user what search will be performed
+    println("hello. I will search PubMed for $pubmed_query")
+
+    # define query dictionary to send to the URL
+    query_dict = Dict()
+    query_dict["api_key"] = ncbi_key
+    query_dict["db"] = "pubmed"
+    query_dict["term"] = pubmed_query    
+    query_dict["retmax"] = 10000
+
+    # send query to esearch
+    search_result = String(HTTP.post(base_search_query, body=HTTP.escapeuri(query_dict)))
+
+    #print(search_result)
+
+    # instantiate pmid_set
+    pmid_set = Set()
+
+    # parse through each result line
+    for result_line in split(search_result, "\n")
+        # println("\$\$\$\$\$ $result_line")
+
+        # use a regular expression to capture the PMIDs from 
+        # lines that match the pattern
+        pmid_capture = match(r"<Id>(\d+)<\/Id>", result_line)
+    
+
+        # only push pmids for lines that contain the pattern
+        if pmid_capture != nothing
+            push!(pmid_set, pmid_capture[1])
+        end
+
+        
+
+    end
+
+    # convert set to a comma list
+    id_string = join(collect(pmid_set), ",")
+
+    # update query dictionary for fetch query
+    base_fetch_query = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi"
+    query_dict["db"] = "pubmed"
+    query_dict["api_key"] = ncbi_key
+    query_dict["id"] = id_string
+    query_dict["rettype"] = "medline"
+    query_dict["retmode"] = "text"
+
+    # send query dictionary to efetch
+    fetch_result = String(HTTP.post(base_fetch_query, body=HTTP.escapeuri(query_dict)))
+
+    # instantiate affiliations dictionary
+    affiliations_dict = Dict()
+
+    # pull out affiliations descriptors from efetch results
+    for fetch_line in split(fetch_result, "\n")
+
+        # println("\$\$\$\$\$ $fetch_line")
+
+        # define the affiliations capture RegEx
+        affiliations_capture = match(r"AD(.........................................................)", fetch_line)
+        
+        # define the date capture RegEx
+        date_capture = match(r"DP\s+-\s+(\d{4})", fetch_line)
+
+        # if the line has the pattern, extract the affiliations
+        # and store into affiliations dictionary & tracking frequency
+        if affiliations_capture != nothing #&& date_capture != nothing
+            #year = date_capture[1]
+
+            # store affiliations, keeping track of occurence 
+            if haskey(affiliations_dict, affiliations_capture[1]) #&& parse(Int, year) > 2007
+                affiliations_dict[affiliations_capture[1]] += 1
+            else
+                affiliations_dict[affiliations_capture[1]] = 1
+            end
+        end
+    end
+
+    # print out counts of affiliations
+    print(output_file, "affiliation|count\n")
+    for affiliations_descriptor in keys(affiliations_dict)
+        if affiliations_dict[affiliations_descriptor] > 30
+            println("$affiliations_descriptor occurs $(affiliations_dict[affiliations_descriptor]) times")
+
+            # prints unique mesh terms and counts to output file
+            print(output_file, "$affiliations_descriptor|$(affiliations_dict[affiliations_descriptor])\n")
+        end
+    end
+
+    close(output_file)
+    
+    #Making a bar graph from using the example data "demo.txt"
+    df = DataFrame(CSV.File("affiliations.txt", header=1, delim="|"))
+    p = plot(df, x=:affiliation, y=:count, kind="bar",
+    Layout(
+        title="Affiliation Occurences"
+    )
+)
+    PlotlyJS.savefig(p, "affiliations.png")
+
+    p2 = plot(
+    df, x=:affiliation, y=:count, kind="bar",
+    marker=attr(showscale=true, coloraxis="coloraxis", color=:count),
+    Layout(
+        xaxis_title_text="Affiliation",
+        yaxis_title_text="Affiliation Counts",
+        height=400,
+        coloraxis_colorbar_title="Counts",
+        title="Affiliation Occurences"
+    )
+)
+PlotlyJS.savefig(p2, "affiliations2.png")
+
+end
+
+# load file that contains api keys
+include("./api_keys.jl") 
+
+function main()
+
+    ncbi_key = api_key["ncbi"]
+    pubmed_query =  """  "heart failure"[mh] and "diabetes mellitus"[mh] """
+
+    # output file that mesh terms and counts will print to
+    output_file = open("affiliations.txt", "w")
+
+    ncbi_mesh_search(pubmed_query, ncbi_key, output_file)
+
+end
+
+
+main()
+
+#"heart failure"[mh] or "heart failure, systolic"[mh] or "heart failure, diastolic"[mh] 
+#   or "cardiomyothpathy, diabetic" [mh] or "diabetes mellitus, type 2"[mh] or "diabetes mellitus, type 1"[mh]) and 
+#   "diabetes mellitus"[mh]

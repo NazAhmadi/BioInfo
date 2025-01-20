@@ -1,0 +1,1 @@
+println("make sure we're in the right directory and we can push to git")
